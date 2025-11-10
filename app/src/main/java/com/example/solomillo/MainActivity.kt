@@ -19,8 +19,7 @@ import kotlin.math.abs
 class MainActivity : AppCompatActivity() {
 
     // Properties
-    lateinit var teams: ArrayList<Team>
-    lateinit var game: Game
+    lateinit var gameManager : GameManager
     lateinit var teamAPoints: TextView
     lateinit var teamBPoints: TextView
     lateinit var teamAName: TextView
@@ -38,8 +37,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         //set properties
-        game = Game()
-        teams = createTeams()
+        gameManager = GameManager()
 
         val teamAContainer = findViewById<LinearLayout>(R.id.team_a_container)
         teamAPoints = teamAContainer.findViewById(R.id.score_team_a)
@@ -58,77 +56,77 @@ class MainActivity : AppCompatActivity() {
 
         teamAName.setOnClickListener {
             TextBox.showNameInputDialog("Team A", this) { newName ->
-                teams[0].name = newName
+                gameManager.getTeamA().name = newName
                 teamAName.text = newName
             }
         }
 
         teamAPoints.setOnClickListener {
-            teams[0].points++;
-            teamAPoints.text = teams[0].points.toString();
+            gameManager.getTeamA().increase();
+            teamAPoints.text = gameManager.getTeamA().points.toString();
         }
 
 
         teamBName.setOnClickListener {
             TextBox.showNameInputDialog("Team B", this) { newName ->
-                teams[1].name = newName
+                gameManager.getTeamB().name = newName
                 teamBName.text = newName
             }
         }
 
         teamBPoints.setOnClickListener {
-            teams[1].increase();
-            teamBPoints.text = teams[1].points.toString();
+            gameManager.getTeamB().increase();
+            teamBPoints.text = gameManager.getTeamB().points.toString();
         }
 
 
         //Swipe listeners
         setSwipeListener(teamAPoints,
             onSwipeDown = {
-                teams[0].decrease()
-                teamAPoints.text = teams[0].points.toString()
+                gameManager.getTeamA().decrease()
+                teamAPoints.text = gameManager.getTeamA().points.toString()
             },
             onSwipeRight = {
-                teams[0].increase(5)
-                teamAPoints.text = teams[0].points.toString()
+                gameManager.getTeamA().increase(5)
+                teamAPoints.text = gameManager.getTeamA().points.toString()
             },
             onSwipeLeft = {
-                teams[0].decrease(5)
-                teamAPoints.text = teams[0].points.toString()
+                gameManager.getTeamA().decrease(5)
+                teamAPoints.text = gameManager.getTeamA().points.toString()
             })
 
         setSwipeListener(teamBPoints,
             onSwipeDown = {
-                teams[1].decrease()
-                teamBPoints.text = teams[1].points.toString()
+                gameManager.getTeamB().decrease()
+                teamBPoints.text = gameManager.getTeamB().points.toString()
             },
             onSwipeRight = {
-                teams[1].increase(5)
-                teamBPoints.text = teams[1].points.toString()
+                gameManager.getTeamB().increase(5)
+                teamBPoints.text = gameManager.getTeamB().points.toString()
             }, onSwipeLeft = {
-                teams[1].decrease(5)
-                teamBPoints.text = teams[1].points.toString()
+                gameManager.getTeamB().decrease(5)
+                teamBPoints.text = gameManager.getTeamB().points.toString()
             })
 
         //Grande, chica, par y juego
         grandePoints?.setOnClickListener {
-            game.grande++;
-            grandePoints?.text = game.grande.toString();
+            gameManager.game.grande++;
+            grandePoints?.text = gameManager.game.grande.toString();
         }
 
         chicaPoints?.setOnClickListener {
-            game.chica++;
-            chicaPoints?.text = game.chica.toString();
+            gameManager.game.chica++;
+            chicaPoints?.text = gameManager.game.chica.toString();
         }
 
         parPoints?.setOnClickListener {
-            game.par++;
-            parPoints?.text = game.par.toString();
+            gameManager.game.par++;
+            parPoints?.text = gameManager.game.par.toString();
         }
 
         juegoPoints?.setOnClickListener {
-            game.juego++;
-            juegoPoints?.text = game.juego.toString();
+            gameManager.game.juego++;
+            juegoPoints?.text = gameManager.game.juego.toString();
         }
 
         //Swipe listeners de grande,chica, juego y par
@@ -142,82 +140,82 @@ class MainActivity : AppCompatActivity() {
             setSwipeListener(
                 grandePoints!!,
                 onSwipeDown = {
-                    if (game.grande > 0) {
-                        game.grande--
-                        grandePoints?.text = game.grande.toString()
+                    if (gameManager.game.grande > 0) {
+                        gameManager.game.grande--
+                        grandePoints?.text = gameManager.game.grande.toString()
                     }
                 },
                 onSwipeRight = {
-                    teams[1].points += game.grande
-                    game.grande = 0
-                    teamBPoints.text = teams[1].points.toString()
-                    grandePoints?.text = game.grande.toString()
+                    gameManager.getTeamB().increase(gameManager.game.grande)
+                    gameManager.game.grande = 0
+                    teamBPoints.text = gameManager.getTeamB().points.toString()
+                    grandePoints?.text = gameManager.game.grande.toString()
                 },
                 onSwipeLeft = {
-                    teams[0].points += game.grande
-                    game.grande = 0
-                    teamAPoints.text = teams[0].points.toString()
-                    grandePoints?.text = game.grande.toString()
+                    gameManager.getTeamA().increase(gameManager.game.grande)
+                    gameManager.game.grande = 0
+                    teamAPoints.text = gameManager.getTeamA().points.toString()
+                    grandePoints?.text = gameManager.game.grande.toString()
                 })
 
             setSwipeListener(chicaPoints!!,
                 onSwipeDown = {
-                    if (game.chica > 0) {
-                        game.chica--
-                        chicaPoints?.text = game.chica.toString()
+                    if (gameManager.game.chica > 0) {
+                        gameManager.game.chica--
+                        chicaPoints?.text = gameManager.game.chica.toString()
                     }
                 },
                 onSwipeRight = {
-                    teams[1].points += game.chica
-                    game.chica = 0
-                    teamBPoints.text = teams[1].points.toString()
-                    chicaPoints?.text = game.chica.toString()
+                    gameManager.getTeamB().increase(gameManager.game.chica)
+                    gameManager.game.chica = 0
+                    teamBPoints.text = gameManager.getTeamB().points.toString()
+                    chicaPoints?.text = gameManager.game.chica.toString()
                 }, onSwipeLeft = {
-                    teams[0].points += game.chica
-                    game.chica = 0
-                    teamAPoints.text = teams[0].points.toString()
-                    chicaPoints?.text = game.chica.toString()
+                    gameManager.getTeamA().increase(gameManager.game.chica)
+                    gameManager.game.chica = 0
+                    teamAPoints.text = gameManager.getTeamA().points.toString()
+                    chicaPoints?.text = gameManager.game.chica.toString()
                 })
 
 
             setSwipeListener(parPoints!!,
                 onSwipeDown = {
-                    if (game.par > 0) {
-                        game.par--
-                        parPoints?.text = game.par.toString()
+                    if (gameManager.game.par > 0) {
+                        gameManager.game.par--
+                        parPoints?.text = gameManager.game.par.toString()
                     }
                 },
                 onSwipeRight = {
-                    teams[1].points += game.par
-                    game.par = 0
-                    teamBPoints.text = teams[1].points.toString()
-                    parPoints?.text = game.par.toString()
+                    gameManager.getTeamB().increase(gameManager.game.par)
+                    gameManager.game.par = 0
+                    teamBPoints.text = gameManager.getTeamB().points.toString()
+                    parPoints?.text = gameManager.game.par.toString()
                 },
                 onSwipeLeft = {
-                    teams[0].points += game.par
-                    game.par = 0
-                    teamAPoints.text = teams[0].points.toString()
-                    parPoints?.text = game.par.toString()
+                    gameManager.getTeamA().increase(gameManager.game.par)
+                    gameManager.game.par = 0
+                    teamAPoints.text = gameManager.getTeamA().points.toString()
+                    parPoints?.text = gameManager.game.par.toString()
                 })
 
             setSwipeListener(juegoPoints!!,
                 onSwipeDown = {
-                    if (game.juego > 0) {
-                        game.juego--
-                        juegoPoints?.text = game.juego.toString()
+                    if (gameManager.game.juego > 0) {
+                        gameManager.game.juego--
+                        juegoPoints?.text = gameManager.game.juego.toString()
                     }
                 },
                 onSwipeRight = {
-                    teams[1].points += game.juego
-                    game.juego = 0
-                    teamBPoints.text = teams[1].points.toString()
-                    juegoPoints?.text = game.juego.toString()
+                    gameManager.getTeamB().increase(gameManager.game.juego)
+                    gameManager.game.juego = 0
+                    teamBPoints.text = gameManager.getTeamB().points.toString()
+                    juegoPoints?.text = gameManager.game.juego.toString()
                 },
                 onSwipeLeft = {
-                    teams[0].points += game.juego
-                    game.juego = 0
-                    teamAPoints.text = teams[0].points.toString()
-                    juegoPoints?.text = game.juego.toString()
+                    gameManager.getTeamA().increase(gameManager.game.juego)
+                    gameManager.game.juego = 0
+                    teamAPoints.text = gameManager.getTeamA().points.toString()
+                    juegoPoints?.text = gameManager.game.juego.toString()
                 })
 
         }
@@ -227,13 +225,6 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-    }
-
-    private fun createTeams(): ArrayList<Team> {
-        val array: ArrayList<Team> = ArrayList()
-        array.add(Team("Team A", 0))
-        array.add(Team("Team B", 0))
-        return array
     }
 
     private fun setSwipeListener(
@@ -304,36 +295,36 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt("teamA_points", teams[0].points)
-        outState.putInt("teamB_points", teams[1].points)
-        outState.putInt("grande", game.grande)
-        outState.putInt("chica", game.chica)
-        outState.putInt("par", game.par)
-        outState.putInt("juego", game.juego)
-        outState.putString("teamA_name", teams[0].name)
-        outState.putString("teamB_name", teams[1].name)
+        outState.putInt("teamA_points", gameManager.getTeamA().points)
+        outState.putInt("teamB_points", gameManager.getTeamB().points)
+        outState.putInt("grande", gameManager.game.grande)
+        outState.putInt("chica", gameManager.game.chica)
+        outState.putInt("par", gameManager.game.par)
+        outState.putInt("juego", gameManager.game.juego)
+        outState.putString("teamA_name", gameManager.getTeamA().name)
+        outState.putString("teamB_name", gameManager.getTeamB().name)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        teams[0].points = savedInstanceState.getInt("teamA_points")
-        teams[1].points = savedInstanceState.getInt("teamB_points")
-        teams[0].name = savedInstanceState.getString("teamA_name") ?: "Team A"
-        teams[1].name = savedInstanceState.getString("teamB_name") ?: "Team B"
-        game.grande = savedInstanceState.getInt("grande")
-        game.chica = savedInstanceState.getInt("chica")
-        game.par = savedInstanceState.getInt("par")
-        game.juego = savedInstanceState.getInt("juego")
+        gameManager.getTeamA().points = savedInstanceState.getInt("teamA_points")
+        gameManager.getTeamB().points = savedInstanceState.getInt("teamB_points")
+        gameManager.getTeamA().name = savedInstanceState.getString("teamA_name") ?: "Team A"
+        gameManager.getTeamB().name = savedInstanceState.getString("teamB_name") ?: "Team B"
+        gameManager.game.grande = savedInstanceState.getInt("grande")
+        gameManager.game.chica = savedInstanceState.getInt("chica")
+        gameManager.game.par = savedInstanceState.getInt("par")
+        gameManager.game.juego = savedInstanceState.getInt("juego")
 
         // Update UI
-        teamAPoints.text = teams[0].points.toString()
-        teamBPoints.text = teams[1].points.toString()
-        teamAName.text = teams[0].name
-        teamBName.text = teams[1].name
-        grandePoints?.text = game.grande.toString()
-        chicaPoints?.text = game.chica.toString()
-        parPoints?.text = game.par.toString()
-        juegoPoints?.text = game.juego.toString()
+        teamAPoints.text = gameManager.getTeamA().points.toString()
+        teamBPoints.text = gameManager.getTeamB().points.toString()
+        teamAName.text = gameManager.getTeamA().name
+        teamBName.text = gameManager.getTeamB().name
+        grandePoints?.text = gameManager.game.grande.toString()
+        chicaPoints?.text = gameManager.game.chica.toString()
+        parPoints?.text = gameManager.game.par.toString()
+        juegoPoints?.text = gameManager.game.juego.toString()
     }
 
 }
