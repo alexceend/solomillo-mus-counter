@@ -52,6 +52,12 @@ class MainActivity : AppCompatActivity() {
         parPoints = findViewById(R.id.score_par)
         juegoPoints = findViewById(R.id.score_juego)
 
+        val scoreViews = listOf(
+            ScoreView(grandePoints, ScoreType.GRANDE),
+            ScoreView(chicaPoints, ScoreType.CHICA),
+            ScoreView(parPoints, ScoreType.PAR),
+            ScoreView(juegoPoints, ScoreType.JUEGO)
+        )
 
 
         teamAName.setOnClickListener {
@@ -108,116 +114,34 @@ class MainActivity : AppCompatActivity() {
                 teamBPoints.text = gameManager.getTeamB().points.toString()
             })
 
+
         //Grande, chica, par y juego
-        grandePoints?.setOnClickListener {
-            gameManager.game.grande++;
-            grandePoints?.text = gameManager.game.grande.toString();
-        }
+        scoreViews.filter { it.view != null}.forEach { scoreView ->
+            val view = scoreView.view ?: return@forEach
 
-        chicaPoints?.setOnClickListener {
-            gameManager.game.chica++;
-            chicaPoints?.text = gameManager.game.chica.toString();
-        }
-
-        parPoints?.setOnClickListener {
-            gameManager.game.par++;
-            parPoints?.text = gameManager.game.par.toString();
-        }
-
-        juegoPoints?.setOnClickListener {
-            gameManager.game.juego++;
-            juegoPoints?.text = gameManager.game.juego.toString();
-        }
-
-        //Swipe listeners de grande,chica, juego y par
-        //No me juzgueis por estom estaba intentando hacer dos main activities
-        //Una para cada layout pero no para de crashear asi q he optado
-        //por esta guarrada
-        if(grandePoints != null
-            && chicaPoints != null
-            && juegoPoints != null
-            && parPoints != null){
-            setSwipeListener(
-                grandePoints!!,
+            view.setOnClickListener {
+                gameManager.increaseScore(scoreView.type)
+                view.text = gameManager.getScore(scoreView.type).toString()
+            }
+            setSwipeListener(view,
                 onSwipeDown = {
-                    if (gameManager.game.grande > 0) {
-                        gameManager.game.grande--
-                        grandePoints?.text = gameManager.game.grande.toString()
+                    if(gameManager.getScore(scoreView.type) > 0){
+                        gameManager.decreaseScore(scoreView.type)
+                        view.text = gameManager.getScore(scoreView.type).toString()
                     }
                 },
                 onSwipeRight = {
-                    gameManager.getTeamB().increase(gameManager.game.grande)
-                    gameManager.game.grande = 0
+                    gameManager.getTeamB().increase(gameManager.getScore(scoreView.type))
+                    gameManager.resetScore(scoreView.type)
                     teamBPoints.text = gameManager.getTeamB().points.toString()
-                    grandePoints?.text = gameManager.game.grande.toString()
+                    view.text = gameManager.getScore(scoreView.type).toString()
                 },
                 onSwipeLeft = {
-                    gameManager.getTeamA().increase(gameManager.game.grande)
-                    gameManager.game.grande = 0
+                    gameManager.getTeamA().increase(gameManager.getScore(scoreView.type))
+                    gameManager.resetScore(scoreView.type)
                     teamAPoints.text = gameManager.getTeamA().points.toString()
-                    grandePoints?.text = gameManager.game.grande.toString()
+                    view.text = gameManager.getScore(scoreView.type).toString()
                 })
-
-            setSwipeListener(chicaPoints!!,
-                onSwipeDown = {
-                    if (gameManager.game.chica > 0) {
-                        gameManager.game.chica--
-                        chicaPoints?.text = gameManager.game.chica.toString()
-                    }
-                },
-                onSwipeRight = {
-                    gameManager.getTeamB().increase(gameManager.game.chica)
-                    gameManager.game.chica = 0
-                    teamBPoints.text = gameManager.getTeamB().points.toString()
-                    chicaPoints?.text = gameManager.game.chica.toString()
-                }, onSwipeLeft = {
-                    gameManager.getTeamA().increase(gameManager.game.chica)
-                    gameManager.game.chica = 0
-                    teamAPoints.text = gameManager.getTeamA().points.toString()
-                    chicaPoints?.text = gameManager.game.chica.toString()
-                })
-
-
-            setSwipeListener(parPoints!!,
-                onSwipeDown = {
-                    if (gameManager.game.par > 0) {
-                        gameManager.game.par--
-                        parPoints?.text = gameManager.game.par.toString()
-                    }
-                },
-                onSwipeRight = {
-                    gameManager.getTeamB().increase(gameManager.game.par)
-                    gameManager.game.par = 0
-                    teamBPoints.text = gameManager.getTeamB().points.toString()
-                    parPoints?.text = gameManager.game.par.toString()
-                },
-                onSwipeLeft = {
-                    gameManager.getTeamA().increase(gameManager.game.par)
-                    gameManager.game.par = 0
-                    teamAPoints.text = gameManager.getTeamA().points.toString()
-                    parPoints?.text = gameManager.game.par.toString()
-                })
-
-            setSwipeListener(juegoPoints!!,
-                onSwipeDown = {
-                    if (gameManager.game.juego > 0) {
-                        gameManager.game.juego--
-                        juegoPoints?.text = gameManager.game.juego.toString()
-                    }
-                },
-                onSwipeRight = {
-                    gameManager.getTeamB().increase(gameManager.game.juego)
-                    gameManager.game.juego = 0
-                    teamBPoints.text = gameManager.getTeamB().points.toString()
-                    juegoPoints?.text = gameManager.game.juego.toString()
-                },
-                onSwipeLeft = {
-                    gameManager.getTeamA().increase(gameManager.game.juego)
-                    gameManager.game.juego = 0
-                    teamAPoints.text = gameManager.getTeamA().points.toString()
-                    juegoPoints?.text = gameManager.game.juego.toString()
-                })
-
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
