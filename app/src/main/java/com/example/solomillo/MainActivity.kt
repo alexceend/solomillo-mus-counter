@@ -59,20 +59,12 @@ class MainActivity : AppCompatActivity() {
             ScoreView(juegoPoints, ScoreType.JUEGO)
         )
 
-
         teamAName.setOnClickListener {
             TextBox.showNameInputDialog("Team A", this) { newName ->
                 gameManager.getTeamA().name = newName
                 teamAName.text = newName
             }
         }
-
-        teamAPoints.setOnClickListener {
-            gameManager.getTeamA().increase();
-            teamAPoints.text = gameManager.getTeamA().points.toString();
-        }
-
-
         teamBName.setOnClickListener {
             TextBox.showNameInputDialog("Team B", this) { newName ->
                 gameManager.getTeamB().name = newName
@@ -80,69 +72,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        teamBPoints.setOnClickListener {
-            gameManager.getTeamB().increase();
-            teamBPoints.text = gameManager.getTeamB().points.toString();
-        }
-
+        //Single taps
+        bindSingleTap(gameManager.getTeamA(), teamAPoints)
+        bindSingleTap(gameManager.getTeamB(), teamBPoints)
 
         //Swipe listeners
-        setSwipeListener(teamAPoints,
-            onSwipeDown = {
-                gameManager.getTeamA().decrease()
-                teamAPoints.text = gameManager.getTeamA().points.toString()
-            },
-            onSwipeRight = {
-                gameManager.getTeamA().increase(5)
-                teamAPoints.text = gameManager.getTeamA().points.toString()
-            },
-            onSwipeLeft = {
-                gameManager.getTeamA().decrease(5)
-                teamAPoints.text = gameManager.getTeamA().points.toString()
-            })
-
-        setSwipeListener(teamBPoints,
-            onSwipeDown = {
-                gameManager.getTeamB().decrease()
-                teamBPoints.text = gameManager.getTeamB().points.toString()
-            },
-            onSwipeRight = {
-                gameManager.getTeamB().increase(5)
-                teamBPoints.text = gameManager.getTeamB().points.toString()
-            }, onSwipeLeft = {
-                gameManager.getTeamB().decrease(5)
-                teamBPoints.text = gameManager.getTeamB().points.toString()
-            })
-
+        bindTeamSwipe(gameManager.getTeamA(), teamAPoints)
+        bindTeamSwipe(gameManager.getTeamB(), teamBPoints)
 
         //Grande, chica, par y juego
-        scoreViews.filter { it.view != null}.forEach { scoreView ->
-            val view = scoreView.view ?: return@forEach
-
-            view.setOnClickListener {
-                gameManager.increaseScore(scoreView.type)
-                view.text = gameManager.getScore(scoreView.type).toString()
-            }
-            setSwipeListener(view,
-                onSwipeDown = {
-                    if(gameManager.getScore(scoreView.type) > 0){
-                        gameManager.decreaseScore(scoreView.type)
-                        view.text = gameManager.getScore(scoreView.type).toString()
-                    }
-                },
-                onSwipeRight = {
-                    gameManager.getTeamB().increase(gameManager.getScore(scoreView.type))
-                    gameManager.resetScore(scoreView.type)
-                    teamBPoints.text = gameManager.getTeamB().points.toString()
-                    view.text = gameManager.getScore(scoreView.type).toString()
-                },
-                onSwipeLeft = {
-                    gameManager.getTeamA().increase(gameManager.getScore(scoreView.type))
-                    gameManager.resetScore(scoreView.type)
-                    teamAPoints.text = gameManager.getTeamA().points.toString()
-                    view.text = gameManager.getScore(scoreView.type).toString()
-                })
-        }
+        scoreViews.filter { it.view != null}.forEach { bindScoreSwipe(it) }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -150,6 +89,62 @@ class MainActivity : AppCompatActivity() {
             insets
         }
     }
+
+
+    private fun bindScoreSwipe(scoreView: ScoreView) {
+        val view = scoreView.view ?: return
+
+        view.setOnClickListener {
+            gameManager.increaseScore(scoreView.type)
+            view.text = gameManager.getScore(scoreView.type).toString()
+        }
+
+        setSwipeListener(view,
+            onSwipeDown = {
+                if (gameManager.getScore(scoreView.type) > 0) {
+                    gameManager.decreaseScore(scoreView.type)
+                    view.text = gameManager.getScore(scoreView.type).toString()
+                }
+            },
+            onSwipeRight = {
+                gameManager.getTeamB().increase(gameManager.getScore(scoreView.type))
+                gameManager.resetScore(scoreView.type)
+                teamBPoints.text = gameManager.getTeamB().points.toString()
+                view.text = gameManager.getScore(scoreView.type).toString()
+            },
+            onSwipeLeft = {
+                gameManager.getTeamA().increase(gameManager.getScore(scoreView.type))
+                gameManager.resetScore(scoreView.type)
+                teamAPoints.text = gameManager.getTeamA().points.toString()
+                view.text = gameManager.getScore(scoreView.type).toString()
+            }
+        )
+    }
+
+    private fun bindSingleTap(team: Team, pointsView: TextView) {
+        pointsView.setOnClickListener {
+            team.increase();
+            pointsView.text = team.points.toString();
+        }
+    }
+
+    private fun bindTeamSwipe(team: Team, pointsView: TextView) {
+        setSwipeListener(pointsView,
+            onSwipeDown = {
+                team.decrease()
+                pointsView.text = team.points.toString()
+            },
+            onSwipeRight = {
+                team.increase(5)
+                pointsView.text = team.points.toString()
+            },
+            onSwipeLeft = {
+                team.decrease(5)
+                pointsView.text = team.points.toString()
+            }
+        )
+    }
+
 
     private fun setSwipeListener(
         view: View,
