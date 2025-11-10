@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
@@ -129,6 +130,7 @@ class MainActivity : AppCompatActivity() {
         pointsView.setOnClickListener {
             team.increase();
             pointsView.text = team.points.toString();
+            checkWinner(team)
         }
     }
 
@@ -142,10 +144,12 @@ class MainActivity : AppCompatActivity() {
             onSwipeRight = {
                 team.increase(5)
                 pointsView.text = team.points.toString()
+                checkWinner(team)
             },
             onSwipeLeft = {
                 team.decrease(5)
                 pointsView.text = team.points.toString()
+                checkWinner(team)
             },
             onLongPress = {
                 team.points = 0
@@ -224,6 +228,38 @@ class MainActivity : AppCompatActivity() {
                 false
             }
         }
+    }
+
+    private fun checkWinner(team: Team){
+        if(team.points >= 40){
+            AlertDialog.Builder(this)
+                .setTitle("Winner!")
+                .setMessage("${team.name} won !")
+                .setPositiveButton("OK"){
+                    dialog, _ -> dialog.dismiss()
+                }
+                .show()
+            resetGame()
+        }
+    }
+
+    private fun resetGame(){
+        gameManager.getTeamA().reset()
+        gameManager.getTeamB().reset()
+
+        // Reset individual scores
+        gameManager.game.grande = 0
+        gameManager.game.chica = 0
+        gameManager.game.par = 0
+        gameManager.game.juego = 0
+
+        // Update UI
+        teamAPoints.text = gameManager.getTeamA().points.toString()
+        teamBPoints.text = gameManager.getTeamB().points.toString()
+        grandePoints?.text = gameManager.game.grande.toString()
+        chicaPoints?.text = gameManager.game.chica.toString()
+        parPoints?.text = gameManager.game.par.toString()
+        juegoPoints?.text = gameManager.game.juego.toString()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
