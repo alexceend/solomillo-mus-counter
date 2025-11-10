@@ -19,7 +19,7 @@ import kotlin.math.abs
 class MainActivity : AppCompatActivity() {
 
     // Properties
-    lateinit var gameManager : GameManager
+    lateinit var gameManager: GameManager
     lateinit var teamAPoints: TextView
     lateinit var teamBPoints: TextView
     lateinit var teamAName: TextView
@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
     var chicaPoints: TextView? = null
     var parPoints: TextView? = null
     var juegoPoints: TextView? = null
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         bindTeamSwipe(gameManager.getTeamB(), teamBPoints)
 
         //Grande, chica, par y juego
-        scoreViews.filter { it.view != null}.forEach { bindScoreSwipe(it) }
+        scoreViews.filter { it.view != null }.forEach { bindScoreSwipe(it) }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -99,7 +98,8 @@ class MainActivity : AppCompatActivity() {
             view.text = gameManager.getScore(scoreView.type).toString()
         }
 
-        setSwipeListener(view,
+        setSwipeListener(
+            view,
             onSwipeDown = {
                 if (gameManager.getScore(scoreView.type) > 0) {
                     gameManager.decreaseScore(scoreView.type)
@@ -117,6 +117,10 @@ class MainActivity : AppCompatActivity() {
                 gameManager.resetScore(scoreView.type)
                 teamAPoints.text = gameManager.getTeamA().points.toString()
                 view.text = gameManager.getScore(scoreView.type).toString()
+            },
+            onLongPress = {
+                gameManager.resetScore(scoreView.type)
+                view.text = gameManager.getScore(scoreView.type).toString()
             }
         )
     }
@@ -129,7 +133,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun bindTeamSwipe(team: Team, pointsView: TextView) {
-        setSwipeListener(pointsView,
+        setSwipeListener(
+            pointsView,
             onSwipeDown = {
                 team.decrease()
                 pointsView.text = team.points.toString()
@@ -141,6 +146,10 @@ class MainActivity : AppCompatActivity() {
             onSwipeLeft = {
                 team.decrease(5)
                 pointsView.text = team.points.toString()
+            },
+            onLongPress = {
+                team.points = 0
+                pointsView.text = team.points.toString()
             }
         )
     }
@@ -150,7 +159,8 @@ class MainActivity : AppCompatActivity() {
         view: View,
         onSwipeDown: (() -> Unit)? = null,
         onSwipeLeft: (() -> Unit)? = null,
-        onSwipeRight: (() -> Unit)? = null
+        onSwipeRight: (() -> Unit)? = null,
+        onLongPress: (() -> Unit)? = null
     ) {
         var isSwiping = false
 
@@ -198,6 +208,10 @@ class MainActivity : AppCompatActivity() {
                 override fun onDown(e: MotionEvent?): Boolean {
                     isSwiping = false
                     return true
+                }
+
+                override fun onLongPress(e: MotionEvent?) {
+                    onLongPress?.invoke()
                 }
             })
 
