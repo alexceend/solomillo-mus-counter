@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="score_team_a" type="id" />
+    <item name="score_team_b" type="id" />
+    <item name="score_grande" type="id" />
+    <item name="score_chica" type="id" />
+    <item name="score_par" type="id" />
+    <item name="score_juego" type="id" />
+    <item name="team_b_label" type="id" />
+    <item name="team_a_label" type="id" />
+    <item name="grande_label" type="id" />
+    <item name="chica_label" type="id" />
+    <item name="par_label" type="id" />
+    <item name="juego_label" type="id" />
+    <item name="team_a_container" type="id" />
+    <item name="team_b_container" type="id" />
+    <item name="grande_container" type="id" />
+    <item name="chica_container" type="id" />
+    <item name="par_container" type="id" />
+    <item name="juego_container" type="id" />
+</resources>
