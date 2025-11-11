@@ -50,3 +50,6 @@ output.json
 #NDK
 obj/
 .externalNativeBuild
+
+# Release
+/app/release/
