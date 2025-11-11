@@ -11,7 +11,7 @@
     android:paddingTop="32dp"
     android:background="@color/black">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/team_a_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,7 +32,10 @@
             android:layout_height="wrap_content"
             android:text="Team A"
             android:textSize="48sp"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
             android:id="@+id/score_team_a"
@@ -41,9 +44,12 @@
             android:text="0"
             android:textSize="100sp"
             android:textColor="@color/white"
+            app:layout_constraintTop_toBottomOf="@id/team_a_label"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="8dp" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout

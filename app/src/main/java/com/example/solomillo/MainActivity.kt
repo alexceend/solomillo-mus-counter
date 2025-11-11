@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
@@ -39,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         //set properties
         gameManager = GameManager()
 
-        val teamAContainer = findViewById<LinearLayout>(R.id.team_a_container)
+        val teamAContainer = findViewById<ConstraintLayout>(R.id.team_a_container)
         teamAPoints = teamAContainer.findViewById(R.id.score_team_a)
         teamAName = teamAContainer.findViewById(R.id.team_a_label)
 
