@@ -1,3 +1,3 @@
 # Solomillo Mus Counter App
 
-Aplicación para llevar el conteon cuando no hay amarracos
+Aplicación para llevar el conteo del juego de cartas "Mus" cuando no hay amarracos
